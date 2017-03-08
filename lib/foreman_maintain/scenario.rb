@@ -15,7 +15,7 @@ module ForemanMaintain
 
       def initialize(filter_tags)
         @filter_tags = filter_tags
-        @steps = ForemanMaintain.available_checks(:tags => filter_tags)
+        @steps = ForemanMaintain.available_checks(:tags => filter_tags).map(&:ensure_instance)
       end
 
       def description
@@ -36,6 +36,16 @@ module ForemanMaintain
 
     # Override to compose steps for the scenario
     def compose; end
+
+    def add_steps(steps)
+      steps.each do |step|
+        self.steps << step.ensure_instance
+      end
+    end
+
+    def add_step(step)
+      add_steps([step])
+    end
 
     def self.inspect
       "Scenario Class #{metadata[:description]}<#{name}>"
